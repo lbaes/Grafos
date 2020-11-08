@@ -112,20 +112,31 @@ typedef struct aresta
 /// @brief funcao find da estrutura de dados union-find 
 static int find(int *componentes, int i)
 {
-    if (componentes[i] == -1)
-        return i;
-    return find(componentes, componentes[i]);
+    return componentes[i];
 }
 
 /// @brief funcao merge da estrutura de dados union-find
-static void merge(int *componentes, int i, int j)
+static void merge(int *componentes, int comp_u, int comp_v, int tam)
 {
-    int comp_u = find(componentes, i);
+    for (int i = 0; i< tam; ++i){
+        if (componentes[i] == comp_u){
+            componentes[i] = comp_v;
+        }
+    }      
+}
+
+/*
+int comp_u = find(componentes, i);
     int comp_v = find(componentes, j);
 
-    if (comp_u != comp_v)
-        componentes[comp_u] = comp_v;
-}
+    if (comp_u != comp_v){
+        for (int i = 0; i< tam; ++i){
+            if (componentes[i] == comp_u){
+                componentes[i] = comp_v;
+            }
+        }
+    }
+*/
 
 
 /// @brief Algoritmo de Kruskal para geração de árvore geradora minima
@@ -141,7 +152,9 @@ static grafoMAT_t *kruskal_aux(grafoMAT_t *g, aresta_t *A)
     }
 
     int componentes[g->v];
-    memset(componentes, -1, g->v * sizeof(int));
+    for (int i = 0; i < g->v; ++i){
+        componentes[i] = i;
+    }
     int ai = 0;
     while (T->a < g->v - 1 && ai < g->a)
     {
@@ -150,9 +163,14 @@ static grafoMAT_t *kruskal_aux(grafoMAT_t *g, aresta_t *A)
         int comp_v = find(componentes, menor_aresta.w);
         if (comp_u != comp_v)
         {
-            merge(componentes, comp_u, comp_v);
+            merge(componentes, comp_u, comp_v, g->v);
             grafoMAT_insere_aresta(T, menor_aresta.v, menor_aresta.w, menor_aresta.valor);
         }
+
+        for (int i = 0; i < g->v; i++){
+            printf("%3d ", componentes[i]);
+        }
+        puts("\n");
     }
 
     return T;
